@@ -1,0 +1,92 @@
+#include <iostream>
+#include <exception>
+#include <string>
+
+class Error : public std::exception{
+
+public:
+    Error(){}
+    Error(std::string exposed):m_exmposed(exposed){}
+    virtual~Error(){}
+
+protected:
+    std::string m_exposed;
+};
+
+class Observer{
+    public :
+
+     Observer();
+    ~Observer();
+
+    void update(double getVal);
+};
+Observer::Observer(){
+}
+Observer::~Observer(){
+}
+
+void Observer::update(double getVal){
+
+    std::cout<<"Value Observed : "<<getVal<<std::endl;
+}
+
+class Servo{
+
+    public :
+
+    Servo(double angle);
+   ~Servo();
+
+    void value(double setval){
+
+        angle_=setval;
+
+        notify();
+    }
+
+    void setting(double val);
+
+    void notify();
+
+  private:
+
+      double angle_ = 0;
+      Observer *obsv;
+
+};
+
+Servo::Servo(double angle):angle_(angle){
+
+    value(angle_);
+    obsv = new Observer();
+}
+
+Servo::~Servo(){
+    delete obsv;
+}
+
+void Servo::notify(){
+
+    obsv->update(angle_);
+}
+
+void Servo::setting(double val){
+       angle_=val;
+        notify();
+}
+
+int main()
+{
+
+    Servo servo(0);
+
+    //Enter any value (double) using the setting() function
+
+    servo.setting(90);
+
+    servo.setting(160);
+
+
+    return 0;
+}
