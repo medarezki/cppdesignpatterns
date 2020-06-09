@@ -1,17 +1,5 @@
 #include <iostream>
 #include <exception>
-#include <string>
-
-class Error : public std::exception{
-
-public:
-    Error(){}
-    Error(std::string exposed):m_exmposed(exposed){}
-    virtual~Error(){}
-
-protected:
-    std::string m_exposed;
-};
 
 class Observer{
     public :
