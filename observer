@@ -1,80 +1,140 @@
 #include <iostream>
-#include <exception>
+#include <deque>
+#include <vector>
+#include <type_traits>
 
-class Observer{
-    public :
+//Observer Design Pattern (Basic)
 
-     Observer();
-    ~Observer();
 
-    void update(double getVal);
+template<class T >
+
+class ObserverPattern{
+
+ public:
+
+     ObserverPattern();
+     ObserverPattern(T& observed_);
+     virtual ~ObserverPattern<T>();
+
+     void observe(T& );
+     void update(T& );
+
+
+
+ private:
+
+     T observed;
+
 };
-Observer::Observer(){
+
+
+template<class T>
+
+ObserverPattern<T>::ObserverPattern():observed(0){}
+
+template<class T>
+
+ObserverPattern<T>::ObserverPattern(T& observed_){}
+
+
+template <class T>
+ObserverPattern<T>::~ObserverPattern(){
 }
-Observer::~Observer(){
+
+template<class T>
+
+void ObserverPattern<T>::observe(T& value){
+
+    std::cout<<"Observing..."<<std::endl;
+
+    update(value);
 }
 
-void Observer::update(double getVal){
+template<class T>
 
-    std::cout<<"Value Observed : "<<getVal<<std::endl;
-}
+void ObserverPattern<T>::update(T& value){
 
-class Servo{
 
-    public :
+    try{
+       observed= value;
 
-    Servo(double angle);
-   ~Servo();
+    }catch(std::exception& e){
 
-    void value(double setval){
-
-        angle_=setval;
-
-        notify();
+        std::cout<<e.what()<<std::endl;
     }
 
-    void setting(double val);
+    std::cout<<"Value observed :"<< observed<<std::endl;
 
-    void notify();
 
-  private:
+}
 
-      double angle_ = 0;
-      Observer *obsv;
+
+
+
+
+template<class U>
+
+class Object{
+
+ public:
+    Object();
+    Object(std::vector<U >& values_, U& value_);
+    virtual ~Object<U>();
+
+    void setvalue(U&);
+
+
+
+
+ private:
+    std::deque<U > values;
+    U value;
+
+    ObserverPattern<U >* obsvrptr;
+
+
+
 
 };
 
-Servo::Servo(double angle):angle_(angle){
+template<class U>
 
-    value(angle_);
-    obsv = new Observer();
+Object<U>::Object():value(0){}
+
+template<class U>
+
+Object<U>::Object(std::vector<U>& values_, U& value_){
+
+    obsvrptr= new ObserverPattern<U>;
+
 }
 
-Servo::~Servo(){
-    delete obsv;
+
+template <class U>
+Object<U>::~Object(){
 }
 
-void Servo::notify(){
+template<class U>
 
-    obsv->update(angle_);
+void Object<U>::setvalue(U& value_){
+
+    value =value_;
+
+    obsvrptr->observe(value_);
+
 }
 
-void Servo::setting(double val){
-       angle_=val;
-        notify();
-}
 
-int main()
-{
 
-    Servo servo(0);
+int main(){
 
-    //Enter any value (double) using the setting() function
+    std::vector<int> values{1,2,3};
+    int value{2};
+    int setting_val{42};
 
-    servo.setting(90);
+    Object<int> obj(values, value);
 
-    servo.setting(160);
-
+    obj.setvalue(setting_val);
 
     return 0;
 }
