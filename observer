@@ -1,7 +1,6 @@
 #include <iostream>
-#include <deque>
 #include <vector>
-#include <type_traits>
+
 
 //Observer Design Pattern (Basic)
 
