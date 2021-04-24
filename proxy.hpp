@@ -1,105 +1,146 @@
 #include <iostream>
+#include <deque>
 
-class Subject{ //RAII Subject
+//Proxy Design Pattern (Basic)
 
-public:
+template<class U>
 
-    Subject(){}
-    Subject(int data):mdata(data){
+class Object{
 
-        std::cout<<"Subject "<< mdata <<" constructed "<<std::endl;
-         nInstances++;
-    }
-    virtual~Subject(){
-        std::cout<<"Subject "<< mdata <<" destroyed "<<std::endl;
-         nInstances--;
-    }
+ public:
 
-    Subject (Subject const& subject):mdata(subject.mdata){
-          std::cout<<"Data copied"<<std::endl;
-    }
-    Subject& operator=(Subject const& subject){
+    Object();
+    Object(std::deque<U >& values_, U& value_);
+    virtual ~Object<U>();
 
-       if(this != &subject){
+    void setvalue(U);
+    void resetvalue();
 
-         mdata = subject.mdata;
+    void displayvalue(){
 
-         std::cout<<"Data copied"<<std::endl;
-
-       }
-       return *this;
+        std::cout<<value<<std::endl;
     }
 
-    Subject (Subject const&& subject):mdata(subject.mdata){
-          std::cout<<"Data moved"<<std::endl;
-    }
-    Subject& operator=(Subject const&& subject){
+ private:
+    std::deque<U > values;
+    U value;
 
-       if(this != &subject){
 
-         mdata = std::move(subject.mdata);
+};
 
-         std::cout<<"Data moved"<<std::endl;
+template<class T >
 
-       }
+class ProxyPattern{
 
-       return *this;
-    }
+ public:
 
-    void incrementInstances(){
-        nInstances++;
-    }
+     ProxyPattern();
+     ProxyPattern(Object<T>& candidate);
+     virtual ~ProxyPattern<T>();
 
-    void doWork(){
+     void work1();
+     void work2();
 
-       std::cout<<"Processing ..."<<std::endl;
-       std::cout<<"Data : "<<mdata<<std::endl;
 
-    }
-protected:
-    int mdata;
-    static int nInstances;
+
+ private:
+
+     Object<T>* object;
 
 };
 
 
-class Proxy{
+template<class T>
 
-public:
-
-    Proxy(){}
-    Proxy(int data):mdata(data){
-          subject=NULL;
-    }
-    virtual~Proxy(){
-    delete subject;
-    }
+ProxyPattern<T>::ProxyPattern(){
 
 
-    void work(){
+}
 
-        if(!subject){
-        subject = new Subject{mdata};
-        if(subject){
-                subject->doWork();
 
-        }
-        }
-    }
+template<class T>
 
-protected:
-    Subject *subject;
-    int mdata;
+ProxyPattern<T>::ProxyPattern(Object<T>& candidate){
 
-};
 
-int Subject::nInstances = 0;
+    object = &candidate;
 
-int main()
-{
-    Proxy subject{1};
+}
 
-    subject.work();
+
+template <class T>
+
+ProxyPattern<T>::~ProxyPattern(){
+
+    delete object;
+
+}
+
+template<class T>
+
+void ProxyPattern<T>::work1(){
+
+    object->setvalue(42);
+
+}
+
+template<class T>
+
+void ProxyPattern<T>::work2(){
+
+    object->resetvalue();
+
+}
+
+
+
+//
+template<class U>
+
+Object<U>::Object():value(0){}
+
+template<class U>
+
+Object<U>::Object(std::deque<U>& values_, U& value_){
+
+
+}
+
+
+template <class U>
+Object<U>::~Object(){
+}
+
+template<class U>
+
+void Object<U>::setvalue(U value_){
+
+    value =value_;
+
+}
+
+
+template<class U>
+
+void Object<U>::resetvalue(){
+
+    value= 0;
+
+}
+
+int main(){
+
+    std::deque<int> values{1,2,3};
+    int value{2};
+    int setting_val{42};
+
+    Object<int> obj(values, value);
+    ProxyPattern<int> proxy(obj);
+
+    proxy.work1();
+
+    obj.displayvalue();
+
 
     return 0;
 }
